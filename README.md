@@ -2,6 +2,9 @@
 
 Auto-complete the сita receiving form on site https://sede.administracionespublicas.gob.es/ for fingerprinting.
 
+*Receiving an invitation to the police (known as a «cita») to get a TIE card has become a nightmare. As long as you fill out the form by hand, all invitations are gone. And in some fields, it's even forbidden to use an autofill option.
+So I had to quickly develop a script to make it easier.*
+
 ## Getting Started
 
 Install the plugin to run custom userscripts, and copy the file content as a new script.
