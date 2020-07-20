@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Cita AutoComplete
 // @namespace    http://xpam.net/
-// @version      0.3
+// @version      0.4
 // @description  AutoComplete of the cita form
 // @author       Andrey Luzhin
 // @include      https://sede.administracionespublicas.gob.es/*
@@ -25,13 +25,19 @@
     const isDate = false; // if "true" - fill date field. It's possible to fill the date field with an empty value, but it's safer not to touch anything that is not required.
 
     // Constants
-    const url = window.location.href;
-    const firstPage = ['https://sede.administracionespublicas.gob.es/icpplustie/icpplustieb/acOpcDirect',
-                       'https://sede.administracionespublicas.gob.es/icpplustie/icpplustieb/index.html',
-                       'https://sede.administracionespublicas.gob.es/icpplustie/icpplustieb/index',
-                       'https://sede.administracionespublicas.gob.es/icpplustie/index.html',
-                       'https://sede.administracionespublicas.gob.es/icpplustie/index',
-                       'https://sede.administracionespublicas.gob.es/icpplustie/']; // There are a lot of ways to get to the front page, so I'm listing everything I've got.
+    const path = window.location.pathname;
+    const page = path.split("/").pop();
+    const firstPage = ['/icpplustie/icpplustieb/acOpcDirect',
+                       '/icpplustie/icpplustieb/index.html',
+                       '/icpplustie/icpplustieb/index',
+                       '/icpplustieb/acOpcDirect',
+                       '/icpplustieb/index.html',
+                       '/icpplustieb/index',
+                       '/icpplustieb/',
+                       '/icpplustie/acOpcDirect',
+                       '/icpplustie/index.html',
+                       '/icpplustie/index',
+                       '/icpplustie/']; // There are a lot of ways to get to the front page, so I'm listing everything I've got.
 
     // Field value setting function. Check for element existance
     function setFieldValue(f, v) {
@@ -46,27 +52,60 @@
     }
 
     // Select Barcelona on the front page
-    if (firstPage.includes(url)) {
+    if (firstPage.includes(path)) {
         var frm = document.getElementById('form');
         if (frm) {
             if (frm.nodeName == "SELECT") { // to make sure, that we change the select field
-                frm.value=provinciaFormURL;
+                frm.value=provinciaFormURL; // quick but dirty
+                if (frm.options[frm.selectedIndex].text != 'Barcelona') alert('Something wrong!'); // quick check for form change
             }
         }
+        /* // If they will change select url again, should use something like this:
+        var formProvince = document.getElementById('form');
+        if (formProvince) {
+            if (formProvince.nodeName == "SELECT") { // to make sure, that we change the select field
+                for (i = 0; i < formProvince.length; i++) {
+                    if (formProvince.options[i].text == 'Barcelona') {
+                        formProvince.options[i].selected = true;
+                        break;
+                    }
+                }
+            }
+        }
+        */
         clickElement('btnAceptar');
     }
 
     // Select procedure (second page)
-    if (url == 'https://sede.administracionespublicas.gob.es/icpplustie/citar?locale=es') {
+    if (page == 'citar') {
         setFieldValue('tramiteGrupo[1]', proceduralAction);
+        /* // more accurate, but have disadvantages
+        var formProcedure = document.getElementById('tramiteGrupo[1]');
+        if (formProcedure) {
+            for (i = 0; i < formProcedure.length; i++) {
+                if (formProcedure.options[i].text == 'POLICIA-TOMA DE HUELLAS (EXPEDICIÓN DE TARJETA) Y RENOVACIÓN DE TARJETA DE LARGA DURACIÓN') {
+                    formProcedure.options[i].selected = true;
+                    break;
+                }
+            }
+        }
+        */
         clickElement('btnAceptar');
     }
 
     // Agreement of procedure (third page)
-    if (url == 'https://sede.administracionespublicas.gob.es/icpplustie/icpplustieb/acInfo?p=8&tramite=4010') clickElement('btnEntrar');
+    if (page == 'acInfo') {
+        clickElement('btnEntrar');
+        // they changed moment of notification, about absence of citas
+        var bte = document.getElementById('btnEntrar');
+        if (bte === null) { // NB: if they change id of "Entrar" button, this script will stop working properly
+            //alert('No cita');
+            //clickElement('btnVolver'); // No cita, click "Volver"
+        }
+    }
 
     // Fill first form (fourth page)
-    if (url == 'https://sede.administracionespublicas.gob.es/icpplustie/icpplustieb/acEntrada') {
+    if (page == 'acEntrada') {
         // If document type is passport, selecting right radio button
         if (isPassport) clickElement('rdbTipoDocPas');
         // Document Number. One field for both NIE and passport
@@ -77,26 +116,27 @@
         if (isDate) setFieldValue('txtFecha', documentDate);
         // Country selection
         setFieldValue('txtPaisNac', countryCode);
+        alert(page);
         // clickElement(, 'btnAceptar'); // ReCaptcha, no autoclick possible at this time
     }
 
     // Click "Solicitar Cita" (fifth page)
-    if (url == 'https://sede.administracionespublicas.gob.es/icpplustie/icpplustieb/acValidarEntrada') clickElement('btnEnviar');
+    if (page == 'acValidarEntrada') clickElement('btnEnviar');
 
     // Selection of the police department (sixth page)
-    if (url == 'https://sede.administracionespublicas.gob.es/icpplustie/icpplustieb/acCitar') {
+    if (page == 'acCitar') {
         // Always select default option, if you want to select department manually, comment next string
         clickElement('btnSiguiente'); // if Cita exists, proceed
         // If cita not exists
-        var n = document.getElementById('btnSiguiente');
-        if (n === null) {
+        var bts = document.getElementById('btnSiguiente');
+        if (bts === null) { // NB: if they change id of "Siguiente" button, this script will stop working properly
             //alert('No cita');
             //clickElement('btnSalir'); // No cita, click "Salir"
         }
     }
 
     // Second form filling (seventh page)
-    //if (url == '') {
+    //if (page == '') {
     // ... insert form filling here ...
 
     // Phone number
