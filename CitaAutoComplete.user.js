@@ -20,7 +20,7 @@
     const eMail = "none@none.com";
     const countryCode = "149"; // Rusia
     const proceduralAction = "4010"; // POLICIA-TOMA DE HUELLAS (EXPEDICIÓN DE TARJETA) Y RENOVACIÓN DE TARJETA DE LARGA DURACIÓN
-    const provinciaFormURL = "/icpplustie/citar?locale=es"; // Barcelona
+    const provinciaFormURL = "/icpplustie/citar?p=8&locale=es"; // Barcelona
     const isPassport = true; // if "true" - using passport, instead of NIE
     const isDate = false; // if "true" - fill date field. It's possible to fill the date field with an empty value, but it's safer not to touch anything that is not required.
 
