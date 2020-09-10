@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Cita AutoComplete
 // @namespace    http://xpam.net/
-// @version      0.4
+// @version      0.5
 // @description  AutoComplete of the cita form
 // @author       Andrey Luzhin
 // @include      https://sede.administracionespublicas.gob.es/*
@@ -20,7 +20,7 @@
     const eMail = "none@none.com";
     const countryCode = "149"; // Rusia
     const proceduralAction = "4010"; // POLICIA-TOMA DE HUELLAS (EXPEDICIÓN DE TARJETA) Y RENOVACIÓN DE TARJETA DE LARGA DURACIÓN
-    const provinciaFormURL = "/icpplustie/citar?locale=es"; // Barcelona
+    const provinciaFormURL = "/icpplustie/citar?p=8&locale=es"; // Barcelona
     const isPassport = true; // if "true" - using passport, instead of NIE
     const isDate = false; // if "true" - fill date field. It's possible to fill the date field with an empty value, but it's safer not to touch anything that is not required.
 
@@ -116,7 +116,6 @@
         if (isDate) setFieldValue('txtFecha', documentDate);
         // Country selection
         setFieldValue('txtPaisNac', countryCode);
-        alert(page);
         // clickElement(, 'btnAceptar'); // ReCaptcha, no autoclick possible at this time
     }
 
@@ -130,25 +129,20 @@
         // If cita not exists
         var bts = document.getElementById('btnSiguiente');
         if (bts === null) { // NB: if they change id of "Siguiente" button, this script will stop working properly
-            //alert('No cita');
+            //Uncomment next string for autorepeat if no cita exists
             //clickElement('btnSalir'); // No cita, click "Salir"
         }
     }
 
     // Second form filling (seventh page)
-    //if (page == '') {
-    // ... insert form filling here ...
+    if (page == 'acVerFormulario') {
+        // Phone number
+        setFieldValue('txtTelefonoCitado', phoneNumber);
+        // e-mail
+        setFieldValue('emailUNO', eMail);
+        setFieldValue('emailDOS', eMail);
 
-    // Phone number
-    setFieldValue('txtTelefonoCitado', phoneNumber);
-    // e-mail
-    setFieldValue('emailUNO', eMail);
-    setFieldValue('emailDOS', eMail);
-
-    //clickElement('btnEnviar');
-    //}
-
-
-// <input id="btnEnviar" type="button" class="mf-button" value="Solicitar Cita" onclick="enviar('solicitud')" />
+        clickElement('btnSiguiente');
+    }
 
 })();
