@@ -20,9 +20,8 @@
     const phoneNumber = "000000000";
     const eMail = "none@none.com";
     const countryCode = "149"; // Rusia
-    const proceduralPlace = 16; // CNP RAMBLA GUIPUSCOA 74, RAMBLA GUIPUSCOA, 74
+    const proceduralPlace = 16; // 
     const proceduralAction = "4036"; // POLICIA - RECOGIDA DE TARJETA DE IDENTIDAD DE EXTRANJERO (TIE)
-    const provinciaFormURL = "/icpplustie/citar?p=8&locale=es"; // Barcelona
     const provinceName = "Barcelona"
     const isPassport = false; // if "true" - using passport, instead of NIE
     const isDate = false; // if "true" - fill date field. It's possible to fill the date field with an empty value, but it's safer not to touch anything that is not required.
@@ -140,19 +139,44 @@
     // Click "Solicitar Cita" (fifth page)
     if (page == 'acValidarEntrada') clickElement('btnEnviar');
 
-    // Selection of the police department (sixth page)
+    // Selection of the police department (sixth page) AGAIN
     if (page == 'acCitar') {
         // If cita not exists
-        var noSitaAvailableNow =
-            document.getElementsByClassName("mf-msg__info")[0].innerHTML.includes('En este momento no hay')
-        if (noSitaAvailableNow) { // NB: if they change id of "Siguiente" button, this script will stop working properly
-            //Uncomment next string for autorepeat if no cita exists
-            clickElement('btnSalir'); // No cita, click "Salir"
+        if (document.getElementsByClassName("mf-msg__info").length != 0) {
+            var noSitaAvailableNow =
+                document.getElementsByClassName("mf-msg__info")[0].innerHTML.includes('En este momento no hay')
+            if (noSitaAvailableNow) { // NB: if they change id of "Siguiente" button, this script will stop working properly
+                //Uncomment next string for autorepeat if no cita exists
+                clickElement('btnSalir'); // No cita, click "Salir"
+            }
         } else {
             // Always select default option, if you want to select department manually, comment next string
-            clickElement('btnSiguiente'); // if Cita exists, proceed
-            const hooray = new Audio("https://freesound.org/data/previews/403/403057_7025862-lq.mp3");
-            hooray.play()
+            // clickElement('btnSiguiente'); // if Cita exists, proceed
+            // idSede
+
+            var formProceduralPlace = document.getElementById('idSede');
+            if (formProceduralPlace) {
+                console.info(formProceduralPlace);
+                if (formProceduralPlace.nodeName == "SELECT") { // to make sure, that we change the select field
+                    var isPlaceFound = false;
+                    for (i = 0; i < formProceduralPlace.length; i++) {
+                        if (formProceduralPlace.options[i].value == proceduralPlace) {
+                            formProceduralPlace.options[i].selected = true;
+                            isPlaceFound = true;
+                            break;
+                        }
+                    }
+
+                    if (!isPlaceFound) {
+                        //alert(`Place with ID '${proceduralPlace}' not found; we need to try again.`);
+                        clickElement('btnSalir'); // No cita, click "Salir"
+                    } else {
+                        const hooray = new Audio("https://freesound.org/data/previews/403/403057_7025862-lq.mp3");
+                        hooray.play()
+                        clickElement('btnSiguiente'); // if Cita exists, proceed
+                    }
+                }
+            }
         }
     }
 

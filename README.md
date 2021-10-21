@@ -26,6 +26,10 @@ Tested only in Firefox and Chrome with Tampermonkey, but should work fine
 
 Create a new blank script, and copy content of the [CitaAutoComplete.user.js](CitaAutoComplete.user.js) into it. Save result and enjoy!
 
+For getting TIE card use [TieReceiveCitaAutoComplete.user.js](TieReceiveCitaAutoComplete.user.js)
+
+You can find some IDs which can be useful for filling constants in [RequiredIDs.md](RequiredIDs.md)
+
 
 ## Author
 
